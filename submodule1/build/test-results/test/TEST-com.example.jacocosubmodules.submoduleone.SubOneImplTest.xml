@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.jacocosubmodules.submoduleone.SubOneImplTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2017-08-14T16:04:18" hostname="MQP634-02" time="0.017">
+  <properties/>
+  <testcase name="testFoo" classname="com.example.jacocosubmodules.submoduleone.SubOneImplTest" time="0.017"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

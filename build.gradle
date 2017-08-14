@@ -1,0 +1,97 @@
+buildscript {
+    ext {
+        springBootVersion = '1.5.6.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath ("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath 'com.android.tools.build:gradle:1.3.0'
+    }
+}
+
+plugins {
+    id "io.spring.dependency-management" version "1.0.0.RELEASE"
+}
+
+allprojects {
+    group 'learning'
+    version '1.0-SNAPSHOT'
+
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'java-library-distribution'
+    apply plugin: "jacoco"
+
+    sourceCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        testCompile group: 'junit', name: 'junit', version: '4.12'
+    }
+    dependencyManagement {
+        imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
+    }
+
+    distTar.enabled     = false
+    distZip.enabled     = false
+
+    test {
+        useJUnit()
+        reports.html.enabled = false;
+        jacoco {
+            excludes = ["**/containerTest/**","**/component_tests/**", "**/test/**/*.class"]
+        }
+    }
+}
+
+subprojects {
+    bootRun {
+        enabled = false
+    }
+    bootRepackage {
+        enabled = false
+    }
+    sourceSets {
+        main
+        test
+    }
+}
+
+dependencies {
+    compile subprojects*.project
+    compile('org.springframework.boot:spring-boot-starter')
+}
+
+jar {
+    baseName = rootProject.name
+    manifest.attributes 'Main-Class': 'com.example.jacocosubmodules.root.Main'
+}
+
+def bootJar_classifier  = "docker"
+bootRepackage {
+    enabled = true
+    mainClass = "com.example.jacocosubmodules.root.Main"
+//    classifier = bootJar_classifier
+}
+
+
+task testReport(type: TestReport) {
+    dependsOn allprojects.test
+    destinationDir = file("$rootProject.buildDir/reports/tests/test")
+    reportOn allprojects*.test.binResultsDir
+}
+
+jacocoTestReport {
+    additionalSourceDirs = files(allprojects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories = files(allprojects.sourceSets.main.allSource.srcDirs)
+    classDirectories = files(allprojects.sourceSets.main.output)
+    executionData = files(allprojects.jacocoTestReport.executionData)
+    doFirst {
+        executionData = files(executionData.findAll { it.exists() })
+    }
+}

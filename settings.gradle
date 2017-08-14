@@ -1,0 +1,5 @@
+rootProject.name = 'jacoco_jenkins_multiproject'
+include 'submodule1'
+include 'submodule2'
+include 'submodule'
+
